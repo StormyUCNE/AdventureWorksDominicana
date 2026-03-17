@@ -12,14 +12,16 @@ public partial class Department
     [Column("DepartmentID")]
     public short DepartmentId { get; set; }
 
+    [Required(ErrorMessage = "Campo Obligatorio")]
     [StringLength(50)]
     public string Name { get; set; } = null!;
 
+    [Required(ErrorMessage = "Campo Obligatorio")]
     [StringLength(50)]
     public string GroupName { get; set; } = null!;
 
     [Column(TypeName = "datetime")]
-    public DateTime ModifiedDate { get; set; }
+    public DateTime ModifiedDate { get; set; } = DateTime.Now;
 
     [InverseProperty("Department")]
     public virtual ICollection<EmployeeDepartmentHistory> EmployeeDepartmentHistories { get; set; } = new List<EmployeeDepartmentHistory>();
