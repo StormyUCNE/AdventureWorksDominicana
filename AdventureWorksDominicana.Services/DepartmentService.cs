@@ -32,6 +32,7 @@ public class DepartmentService(IDbContextFactory<Contexto> DbFactory) : IService
         {
             contexto.EmployeeDepartmentHistories.RemoveRange(oldDepartment.EmployeeDepartmentHistories);
             contexto.Departments.Entry(oldDepartment).CurrentValues.SetValues(newDepartment);
+            oldDepartment.ModifiedDate = DateTime.Now;
         }
         foreach(var newEmployee in newDepartment.EmployeeDepartmentHistories)
         {
@@ -41,8 +42,9 @@ public class DepartmentService(IDbContextFactory<Contexto> DbFactory) : IService
                    BusinessEntityId = newEmployee.BusinessEntityId,
                    ShiftId = newEmployee.ShiftId,
                    StartDate = newEmployee.StartDate,
-                   EndDate = newEmployee.EndDate
-               }    
+                   EndDate = newEmployee.EndDate,
+                   ModifiedDate = DateTime.Now
+               }
             );
         }
         return await contexto.SaveChangesAsync() > 0;
