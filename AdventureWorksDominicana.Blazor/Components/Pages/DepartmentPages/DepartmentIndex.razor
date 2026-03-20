@@ -70,16 +70,20 @@
     }
     private async Task Buscar()
     {
-        List<Department> filterList;
+        Expression<Func<Department, bool>> criterio = d => true;
         if (StartDate.HasValue && EndDate.HasValue)
-            filterList = await departmentService.GetList(d => d.ModifiedDate.Date >= StartDate.Value.Date && d.ModifiedDate.Date <= EndDate.Value.Date);
-        else
-            filterList = await departmentService.GetList(p => true);
-        if (!string.IsNullOrWhiteSpace(Filtro))
+        {
+            var start = StartDate.Value.Date;
+            var end = EndDate.Value.Date.AddDays(1).AddTicks(-1);
+            criterio = criterio.And(d => d.ModifiedDate >= start && d.ModifiedDate <= end);
+        }
+        if (!string.IsNullOrWhiteSpace(Filtro) && !string.IsNullOrWhiteSpace(ValorFiltro))
+        {
             if (Filtro == "Name")
-            filterList = filterList.Where(d => d.Name.ToLower().Contains(ValorFiltro.ToLower())).ToList();
+                criterio = criterio.And(d => d.Name.Contains(ValorFiltro));
             else if (Filtro == "GroupName")
-                filterList = filterList.Where(d => d.GroupName.ToLower().Contains(ValorFiltro.ToLower())).ToList();
-        DepartmentsList = filterList;
+                criterio = criterio.And(d => d.GroupName.Contains(ValorFiltro)); 
+        }
+        DepartmentsList = await departmentService.GetList(criterio);
     }
 }
