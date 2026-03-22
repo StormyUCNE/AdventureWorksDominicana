@@ -13,6 +13,8 @@ builder.Services.AddDbContextFactory<Contexto>(options =>
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddBlazoredToast();
+builder.Services.AddScoped<ShipMethodService>();
 builder.Services.AddScoped<CountryRegionsService>();
 
 builder.Services.AddScoped<DepartmentService>();
