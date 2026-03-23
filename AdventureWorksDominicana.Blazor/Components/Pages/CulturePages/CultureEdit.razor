@@ -1,0 +1,168 @@
+﻿@page "/Culture/Edit/{CultureId}"
+@rendermode InteractiveServer
+@inject CultureService cultureService
+@inject ToastService toastService
+@inject NavigationManager navigationManager
+
+<PageTitle>Culture Edit</PageTitle>
+
+<EditForm Model="@Culture" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            
+            <div class="card-header d-flex justify-content-center bg-warning">
+                <h5 class="card-title text-dark mb-0">Edici&oacute;n de Cultura</h5>
+            </div>
+        
+            <div class="card-body">
+                @if (Cargando)
+                {
+                    <div class="text-center">
+                        <div class="spinner-border text-warning" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p>Buscando Cultura...</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label text-bg-warning text-dark p-1 rounded">ID de Cultura</label>
+                            <InputText class="form-control" @bind-Value="Culture.CultureId" readonly />
+                            <ValidationMessage For="() => Culture.CultureId" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-bg-warning text-dark p-1 rounded">Nombre</label>
+                            <InputText class="form-control" @bind-Value="Culture.Name" maxlength="50" />
+                            <ValidationMessage For="() => Culture.Name" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-bg-warning text-dark p-1 rounded">&Uacute;ltima Modificaci&oacute;n</label>
+                            <InputDate class="form-control" @bind-Value="Culture.ModifiedDate" readonly />
+                            <ValidationMessage For="() => Culture.ModifiedDate" />
+                        </div>
+                    </div>
+
+
+                    @if (MostrarConfirmacion)
+                    {
+                        <div class="alert alert-danger mt-4 mb-0 text-center" role="alert">
+                            <strong>¡Atención!</strong> ¿Estás seguro de que deseas eliminar la cultura <strong>@Culture.Name</strong>? Esta acción no se puede deshacer.
+                        </div>
+                    }
+                }
+            </div>
+            
+
+            <div class="card-footer d-flex justify-content-center gap-3">
+                @if (MostrarConfirmacion)
+                {
+                    <button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-1" @onclick="() => MostrarConfirmacion = false">
+                        <i class="bi bi-x-circle"></i>
+                        <span>Cancelar</span>
+                    </button>
+                    <button type="button" class="btn btn-danger d-flex align-items-center gap-1" @onclick="ConfirmarEliminacion">
+                        <i class="bi bi-trash-fill"></i>
+                        <span>Sí, eliminar definitivamente</span>
+                    </button>
+                }
+                else
+                {
+                    <a href="Culture/Index" class="btn btn-outline-secondary d-flex align-items-center gap-1">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Volver</span>
+                    </a>
+                    
+                    <button type="button" class="btn btn-outline-danger d-flex align-items-center gap-1" disabled="@Cargando" @onclick="() => MostrarConfirmacion = true">
+                        <i class="bi bi-trash"></i>
+                        <span>Eliminar</span>
+                    </button>
+
+                    <button type="submit" class="btn btn-outline-warning d-flex align-items-center gap-1" disabled="@Cargando">
+                        <i class="bi bi-pencil-square"></i>
+                        <span>Actualizar</span>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public string CultureId { get; set; } = string.Empty;
+
+    private Culture Culture { get; set; } = new Culture();
+    private bool Cargando { get; set; } = true;
+    
+
+    private bool MostrarConfirmacion { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Cargando = true;
+        
+        if (!string.IsNullOrWhiteSpace(CultureId))
+        {
+            var culturaEncontrada = await cultureService.Buscar(CultureId);
+            
+            if (culturaEncontrada != null)
+            {
+                Culture = culturaEncontrada;
+            }
+            else
+            {
+                toastService.ShowError("La Cultura que intentas editar no existe.");
+                navigationManager.NavigateTo("Culture/Index");
+            }
+        }
+        
+        Cargando = false;
+    }
+
+    private async Task Guardar()
+    {
+        var isCultureDuplicated = await cultureService.GetList(c =>
+            c.Name.ToLower() == Culture.Name.ToLower() &&
+            c.CultureId.ToLower() != Culture.CultureId.ToLower()
+        );
+
+        if (isCultureDuplicated.Any())
+        {
+            toastService.ShowWarning($"Ya existe otra cultura registrada con el Nombre ({Culture.Name}).");
+            return;
+        }
+
+        Culture.ModifiedDate = DateTime.Now;
+
+        var actualizado = await cultureService.Guardar(Culture);
+        if (actualizado)
+        {
+            toastService.ShowSuccess($"Cultura {Culture.Name} actualizada correctamente.");
+            navigationManager.NavigateTo("Culture/Index");
+        }
+        else
+        {
+            toastService.ShowError("Ocurrió un error al intentar actualizar la cultura.");
+        }
+    }
+
+    private async Task ConfirmarEliminacion()
+    {
+
+        var eliminado = await cultureService.Eliminar(Culture.CultureId);
+        
+        if (eliminado)
+        {
+            toastService.ShowSuccess("Cultura eliminada correctamente.");
+            navigationManager.NavigateTo("Culture/Index");
+        }
+        else
+        {
+            toastService.ShowError("Ocurrió un error al intentar eliminar la cultura.");
+            MostrarConfirmacion = false; 
+        }
+    }
+}
