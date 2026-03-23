@@ -46,19 +46,23 @@
                 </div>
                 <div class="col-4">
                     <div class="input-group">
-                        <input class="form-control" type="text" @bind-value="ValorFiltro" />
+                        <input class="form-control" type="text" placeholder="Buscar..." @bind-value="ValorFiltro" />
                         <button class="btn btn-outline-primary bi bi-search" @onclick="Filtrar"></button>
                     </div>
                 </div>
             </div>
 
-            <table class="table table-striped">
+            <table class="table table-striped mt-3">
                 <thead>
                     <tr>
                         <th>Id</th>
-                        <th>CountryRegionId</th>
                         <th>Nombre</th>
+                        <th>Pa&iacute;s/regi&oacute;n</th>
                         <th>Grupo</th>
+                        <th>Ventas</th>
+                        <th>Ventas LY</th>
+                        <th>Costos</th>
+                        <th>Costos LY</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -67,11 +71,15 @@
                     {
                         <tr>
                             <td>@salesTerritory.TerritoryId</td>
-                            <td>@salesTerritory.CountryRegionCode</td>
                             <td>@salesTerritory.Name</td>
+                            <td>@salesTerritory.CountryRegionCode</td>
                             <td>@salesTerritory.Group</td>
+                            <td>@salesTerritory.SalesYtd.ToString("N2")</td>
+                            <td>@salesTerritory.SalesLastYear.ToString("N2")</td>
+                            <td>@salesTerritory.CostYtd.ToString("N2")</td>
+                            <td>@salesTerritory.CostLastYear.ToString("N2")</td>
                             <td>
-                                <a class="btn btn-outline-warning bi bi-pencil-square"></a>
+                                <a class="btn btn-outline-warning bi bi-pencil-square" href="/SalesTerritory/Edit/@salesTerritory.TerritoryId"></a>
                             </td>
                         </tr>
                     }
