@@ -15,7 +15,6 @@ builder.Services.AddRazorComponents()
 
 // Services
 builder.Services.AddScoped<CurrencyService>();
-builder.Services.AddBlazoredToast();
 builder.Services.AddScoped<ShipMethodService>();
 builder.Services.AddScoped<CountryRegionsService>();
 builder.Services.AddScoped<CreditCardService>();
@@ -30,20 +29,7 @@ builder.Services.AddScoped<EmployeeService>();
 builder.Services.AddScoped<ProductCategoryService>();
 builder.Services.AddScoped<SalesTerritoryService>();
 builder.Services.AddScoped<VendorService>();
-builder.Services.AddScoped<SalesOrderHeaderService>();
-builder.Services.AddScoped<CustomerService>();
-builder.Services.AddScoped<SalesPersonService>();
-builder.Services.AddScoped<AddressService>();
-builder.Services.AddScoped<ShipMethodService>();
-builder.Services.AddScoped<CurrencyRateService>();
-builder.Services.AddScoped<SpecialOfferProductService>();
-builder.Services.AddScoped<ProductDescriptionService>();
-builder.Services.AddScoped<ShoppingCartItemService>();
-builder.Services.AddScoped<ProductService>();
-builder.Services.AddScoped<ProductModelService>();
-builder.Services.AddScoped<UnitMeasureService>();
-builder.Services.AddScoped<ProductSubcategoryService>();
-builder.Services.AddScoped<StateProvinceService>();
+builder.Services.AddScoped<CultureService>();
 
 builder.Services.AddBlazorBootstrap();
 var app = builder.Build();
