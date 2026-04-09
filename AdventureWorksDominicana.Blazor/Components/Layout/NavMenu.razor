@@ -208,8 +208,6 @@
                 <span class="bi bi-people-nav-menu" aria-hidden="true"></span> Customers
             </NavLink>
         </div>
-    </nav>
-</div>
 
         <AuthorizeView>
             <Authorized>
@@ -218,8 +216,8 @@
                         <AntiforgeryToken />
                         <input type="hidden" name="ReturnUrl" value="Account/Login" />
 
-                        <button type="submit" class="nav-link btn btn-link" style="text-align: left; width: 100%;">
-                            <span class="bi bi-box-arrow-right" aria-hidden="true"></span> <small>Salir</small>
+                        <button type="submit" class="nav-link ">
+                            <div><span class="bi bi-box-arrow-right" aria-hidden="true"></span></div> <small>Salir</small>
                         </button>
                     </form>
                 </div>
@@ -238,6 +236,8 @@
             </NotAuthorized>
         </AuthorizeView>
 
-
     </nav>
 </div>
+
+
+        
