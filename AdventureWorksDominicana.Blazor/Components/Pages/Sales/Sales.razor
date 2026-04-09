@@ -13,18 +13,24 @@
 <div class="">
     <div class="sale-container">
         @*Header*@
-        <div class="sale-header">
-            <div class="sale-header-logo">
-                <img src="/AdventureLogo.png" alt="AdventureWorksDominicana Logo" />
-                <h4 class="card-title">AdventureWorksDominicana</h4>
+        <div class="sale-topbar">
+
+            <div class="sale-topbar-left">
+                <h5>Tienda</h5>
+                <span>Explora productos disponibles</span>
             </div>
-            <div class="sale-header-actions">
-                <a href="Orders">Orders</a>
-                <a href="ShoppingCart" class="btn btn-primary shopping-cart-container">
+
+            <div class="sale-topbar-right">
+                <a href="Orders" class="btn-outline">
+                    <i class="bi bi-bag"></i> Mis pedidos
+                </a>
+
+                <a href="ShoppingCart" class="btn-primary shopping-cart-container">
                     <i class="bi bi-cart"></i>
                     <span>@shoppingCount</span>
                 </a>
             </div>
+
         </div>
         <div class="card-body">
             <div class="sale-input">
