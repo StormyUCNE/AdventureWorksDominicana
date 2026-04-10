@@ -98,6 +98,7 @@ builder.Services.AddScoped<TransactionHistoryService>();
 builder.Services.AddScoped<PurchaseOrderService>();
 
 builder.Services.AddScoped<ProductInventoryService>();
+builder.Services.AddScoped<ProductPhotoService>();
 
 var app = builder.Build();
 
