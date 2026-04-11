@@ -12,7 +12,7 @@ public class AnoActualOFuturoAttribute : ValidationAttribute
         if (value != null && short.TryParse(value.ToString(), out short anioIngresado))
         {
             int anioActual = DateTime.Now.Year;
-            int anioMaximo = DateTime.Now.Year + 20;
+            int anioMaximo = DateTime.Now.Year + 5;
             if (anioIngresado < anioActual)
             {
                 return new ValidationResult(ErrorMessage ?? "Tarjeta vencida.", new[] { validationContext.MemberName! }); //un arreglo indicando el nombre de la propiedad
