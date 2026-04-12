@@ -1,0 +1,197 @@
+﻿@page "/Employee/PayHistory/{EmployeeId:int}"
+@attribute [Authorize(Roles = "Admin,HRManager")]
+
+@inject EmployeeService employeeService
+@inject EmployeePayHistoryService payHistoryService
+@inject ToastService toastService
+@rendermode InteractiveServer
+
+<PageTitle>Historial de Pagos</PageTitle>
+
+<div class="container mt-4">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-0 ">
+                    <i class="bi bi-clock-history me-2"></i>Historial de Pagos
+                </h4>
+                <small class="text-muted">Gestión de evoluci&oacute;n salarial</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-light text-dark border p-2 d-none d-md-inline-block">
+                    <i class="bi bi-person-circle me-1"></i> @NombreEmpleado
+                </span>
+                <button class="btn btn-primary  shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#formAsignacion">
+                    <i class="bi bi-plus-lg me-1"></i> Registrar Cambio
+                </button>
+            </div>
+        </div>
+        
+        <div class="card-body p-4">
+            
+            <div class="collapse mb-5" id="formAsignacion">
+                <div class="p-4 border border-primary border-opacity-25 rounded-3 bg-light shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-uppercase text-primary fw-bold mb-0">
+                            <i class="bi bi-pencil-square me-2"></i>Nueva Asignaci&oacute;n de Sueldo
+                        </h6>
+                        <button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#formAsignacion"></button>
+                    </div>
+                    
+                    <EditForm Model="NuevoSueldo" OnValidSubmit="GuardarSueldo">
+                        <DataAnnotationsValidator />
+                        <div class="row g-3 align-items-start">
+                            
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small text-muted">Fecha de Vigencia</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-calendar-check"></i></span>
+                                    <InputDate class="form-control" @bind-Value="NuevoSueldo.RateChangeDate" />
+                                </div>
+                                <div class="text-danger small mt-1">
+                                    <ValidationMessage For="@(() => NuevoSueldo.RateChangeDate)" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small text-muted">Monto (RD$ / hora)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white fw-bold">RD$</span>
+                                    <InputNumber class="form-control fw-bold text-success" @bind-Value="NuevoSueldo.Rate" placeholder="0.00" />
+                                </div>
+                                <div class="text-danger small mt-1">
+                                    <ValidationMessage For="@(() => NuevoSueldo.Rate)" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small text-muted">Frecuencia</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-arrow-repeat"></i></span>
+                                    <select class="form-select" @bind="NuevoSueldo.PayFrequency">
+                                        <option value="1">Mensual</option>
+                                        <option value="2">Quincenal</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label d-none d-md-block">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary w-100 shadow-sm">
+                                    <i class="bi bi-floppy me-1"></i> Guardar
+                                </button>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+
+            <div class="table-responsive border rounded-3 shadow-sm bg-white">
+                <QuickGrid Items="ListaPagos" Class="table table-hover align-middle mb-0" Pagination="@pages">
+                    <PropertyColumn Property="@(p => p.RateChangeDate)" Title="Vigencia" Format="dd/MM/yyyy" Sortable="true" />
+                    
+                    <TemplateColumn Title="Sueldo por Hora">
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold text-dark me-1">RD$ @context.Rate.ToString("N2")</span>
+                            <span class="text-muted small">/ hora</span>
+                        </div>
+                    </TemplateColumn>
+
+                    <TemplateColumn Title="Estado de Pago">
+                        <span class="badge rounded-pill @(context.PayFrequency == 1 ? "bg-primary-subtle text-primary border border-primary-subtle" : "bg-warning-subtle text-warning-emphasis border border-warning-subtle") px-3">
+                            <i class="bi @(context.PayFrequency == 1 ? "bi-calendar-month" : "bi-calendar-range") me-1"></i>
+                            @(context.PayFrequency == 1 ? "Mensual" : "Quincenal")
+                        </span>
+                    </TemplateColumn>
+
+                    <TemplateColumn Title="Acciones" Align="Align.Center">
+                        <button class="btn btn-link text-danger p-0" title="Eliminar Registro" @onclick="() => EliminarSueldo(context)">
+                            <i class="bi bi-trash3 fs-5"></i>
+                        </button>
+                    </TemplateColumn>
+                </QuickGrid>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-4">
+                <Paginator State="@pages" />
+            </div>
+        </div>
+
+        <div class="card-footer ">
+            <a class="btn btn-secondary " href="/Employee/Index">
+                <i class="bi bi-arrow-left-short "></i> Volver
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int EmployeeId { get; set; }
+    private string NombreEmpleado = "";
+    private IQueryable<EmployeePayHistory> ListaPagos { get; set; } = Enumerable.Empty<EmployeePayHistory>().AsQueryable();
+    private EmployeePayHistory NuevoSueldo { get; set; } = new();
+    private PaginationState pages = new PaginationState { ItemsPerPage = 5 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var emp = await employeeService.Buscar(EmployeeId);
+        if (emp != null)
+        {
+            NombreEmpleado = $"{emp.BusinessEntity.FirstName} {emp.BusinessEntity.LastName}";
+            await CargarHistorial();
+        }
+        
+        NuevoSueldo = new EmployeePayHistory
+        {
+            BusinessEntityId = EmployeeId,
+            RateChangeDate = DateTime.Now,
+            PayFrequency = 1
+        };
+    }
+
+    private async Task CargarHistorial()
+    {
+        var result = await payHistoryService.GetList(p => p.BusinessEntityId == EmployeeId);
+        ListaPagos = result.OrderByDescending(p => p.RateChangeDate).AsQueryable();
+    }
+
+    private async Task GuardarSueldo()
+    {
+        if (NuevoSueldo.Rate > 200)
+        {
+            toastService.ShowWarning("Esto debemos hablarlo, la base de datos internamente solo permite guardar 200 (En dólares). Yo considero que debemos quitar esa configuración y poner la nuestra equivalente a pesos Dominicanos");
+            return;
+        }
+
+
+
+        var exito = await payHistoryService.Guardar(NuevoSueldo);
+        if (exito)
+        {
+            toastService.ShowSuccess("Sueldo asignado correctamente.");
+            await CargarHistorial();
+        
+            // Reinicio el objeto
+            NuevoSueldo = new EmployeePayHistory
+            {
+                BusinessEntityId = EmployeeId,
+                RateChangeDate = DateTime.Now,
+                PayFrequency = 1
+            };
+        }
+        else
+        {
+            toastService.ShowError("Error al guardar el sueldo.");
+        }
+    }
+
+    private async Task EliminarSueldo(EmployeePayHistory sueldo)
+    {
+        bool elimino = await payHistoryService.Eliminar(sueldo.BusinessEntityId, sueldo.RateChangeDate);
+        if (elimino)
+        {
+            toastService.ShowSuccess("Registro eliminado.");
+            await CargarHistorial();
+        }
+    }
+}
