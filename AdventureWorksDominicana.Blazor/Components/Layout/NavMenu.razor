@@ -482,6 +482,52 @@
             </Authorized>
         </AuthorizeView>
 
+
+        @* ---------- Vista de PurchasingManager ---------- *@
+
+
+        <AuthorizeView Roles="PurchasingManager">
+            <Authorized>
+                @* ========== PURCHASING MODULE ========== *@
+                <div class="accordion px-3 nav-item" id="accordionPurchasingPM">
+                    <div class="accordion-item bg-transparent border-0">
+                        <div class="accordion-header">
+                            <button class="accordion-button collapsed bg-transparent px-3"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapsePurchasingPM">
+                                <span class="bi bi-truck-nav-menu"></span> <small>Purchasing</small>
+                            </button>
+                        </div>
+
+                        <div id="collapsePurchasingPM" class="accordion-collapse collapse">
+                            <div class="accordion-body p-0 ps-3">
+
+                                <div class="nav-item pt-2">
+                                    <NavLink class="nav-link" href="/Vendor/Index">
+                                        <span class="bi bi-shop-nav-menu"></span> <small>Vendors</small>
+                                    </NavLink>
+                                </div>
+
+                                <div class="nav-item">
+                                    <NavLink class="nav-link" href="/ShipMethods">
+                                        <span class="bi bi-send-plus-nav-menu"></span> <small>Ship Methods</small>
+                                    </NavLink>
+                                </div>
+
+                                <div class="nav-item">
+                                    <NavLink class="nav-link" href="/PurchaseOrder/Index">
+                                        <span class="bi bi-clipboard-plus-nav-menu"></span> <small>Purchase Orders</small>
+                                    </NavLink>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="/MyAccount">
                 <span class="bi bi-person-circle-nav-menu" aria-hidden="true"></span> <small>My Account</small>
