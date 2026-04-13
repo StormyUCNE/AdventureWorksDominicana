@@ -13,9 +13,13 @@
             <span>Gestión y consulta de catálogo</span>
         </div>
 
-        <a class="btn btn-primary" href="/Product/Create">
-            <i class="bi bi-plus-square"></i> Crear
-        </a>
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <a class="btn btn-primary" href="/Product/Create">
+                    <i class="bi bi-plus-square"></i> Crear
+                </a>
+            </Authorized>
+        </AuthorizeView>
     </div>
 
     <!-- FILTROS -->
@@ -83,11 +87,15 @@
                 }
             </TemplateColumn>
 
-            <TemplateColumn Class="text-center" Context="p" Title="Acciones">
-                <a href="/Product/Edit/@p.ProductId" class="btn btn-sm btn-outline-primary">
-                    <span class="bi bi-pencil"></span> Modificar
-                </a>
-            </TemplateColumn>
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <TemplateColumn Class="text-center" Context="p" Title="Acciones">
+                        <a href="/Product/Edit/@p.ProductId" class="btn btn-sm btn-outline-primary">
+                            <span class="bi bi-pencil"></span> Modificar
+                        </a>
+                    </TemplateColumn>
+                </Authorized>
+            </AuthorizeView>
 
         </QuickGrid>
 
